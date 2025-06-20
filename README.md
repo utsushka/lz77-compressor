@@ -1,1 +1,1 @@
-# lz77-compressor
+#lz77-cmp
