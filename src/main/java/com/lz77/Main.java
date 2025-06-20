@@ -97,23 +97,24 @@ public class Main {
     public static void compressFile(String inputPath, String outputPath) {
         try {
             System.out.println("\nStarting compression...");
-
-            // Чтение исходного файла
             byte[] inputData = FileIO.readFile(inputPath);
 
-            // Сжатие данных
-            List<Token> compressedTokens = compressor.compress(inputData);
-            CompressionResult result = new CompressionResult(inputData, compressedTokens);
+            // Добавьте лог для отладки
+            System.out.println("Input size: " + inputData.length + " bytes");
 
-            // Сохранение сжатых данных (токенов)
-            FileIO.writeTokens(outputPath, result.compressedTokens());
+            List<Token> tokens = compressor.compress(inputData);
+            System.out.println("Tokens generated: " + tokens.size());
 
-            // Вывод результатов
+            FileIO.writeTokens(outputPath, tokens);
+
+            // Проверка записи/чтения
+            List<Token> testRead = FileIO.readTokens(outputPath);
+            System.out.println("Tokens verified: " + (tokens.size() == testRead.size()));
+
             System.out.println("Compression completed successfully!");
-            System.out.println(result.getSummary());
-            System.out.printf("Saved to: %s%n", outputPath);
-
         } catch (Exception e) {
+            System.err.println("Detailed error:");
+            e.printStackTrace(); // Вывод полного стека ошибки
             throw new RuntimeException("Compression failed: " + e.getMessage(), e);
         }
     }
