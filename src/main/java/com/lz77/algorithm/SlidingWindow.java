@@ -32,40 +32,37 @@ public class SlidingWindow {
         int bestOffset = 0;
         byte nextChar = 0;
 
-        int searchStart = Math.max(0, currentPosition - windowSize);
-        int searchEnd = currentPosition;
-        int lookaheadEnd = Math.min(currentPosition + lookaheadSize, data.length);
-
-        // Оптимизация: прекращаем поиск, если дошли до конца данных
         if (currentPosition >= data.length) {
             return new int[]{0, 0, 0};
         }
 
-        for (int i = searchStart; i < searchEnd; i++) {
-            int length = 0;
+        int searchStart = Math.max(0, currentPosition - windowSize);
+        int lookaheadEnd = Math.min(currentPosition + lookaheadSize, data.length);
+        int maxPossibleLength = lookaheadEnd - currentPosition;
 
-            // Сравниваем символы в буфере поиска и предпросмотра
-            while (currentPosition + length < lookaheadEnd
-                    && i + length < searchEnd
-                    && data[i + length] == data[currentPosition + length]) {
+        // Ограничиваем максимальную длину совпадения размером буфера предпросмотра
+        for (int offset = 1; offset <= currentPosition - searchStart; offset++) {
+            int length = 0;
+            while (length < maxPossibleLength &&
+                    currentPosition + length < data.length &&
+                    data[currentPosition + length] == data[currentPosition - offset + length]) {
                 length++;
             }
 
-            // Обновляем лучшее совпадение
             if (length > maxLength) {
                 maxLength = length;
-                bestOffset = currentPosition - i;
-
-                // Получаем следующий символ после совпадения
-                if (currentPosition + length < data.length) {
-                    nextChar = data[currentPosition + length];
-                } else {
-                    nextChar = 0;
-                }
+                bestOffset = offset;
             }
         }
 
-        return new int[]{bestOffset, maxLength, nextChar & 0xFF};
+        // Определяем следующий символ после совпадения
+        if (currentPosition + maxLength < data.length) {
+            nextChar = data[currentPosition + maxLength];
+        } else {
+            nextChar = 0;
+        }
+
+        return new int[]{bestOffset, maxLength, nextChar};
     }
 
     /**

@@ -42,6 +42,9 @@ public record CompressionResult(
      * @return процент сжатия (0-100%)
      */
     public double getCompressionPercentage() {
+        if (compressionRatio == 0.0) {
+            return 0.0;
+        }
         return 100 - (100 / compressionRatio);
     }
 
@@ -57,10 +60,10 @@ public record CompressionResult(
      */
     public String getSummary() {
         return String.format(
-                "Original: %d bytes, Compressed: ~%d tokens (%.1f bytes), Ratio: %.2f:1 (%.1f%%)",
+                "Original: %d bytes, Compressed: ~%d tokens (%d bytes), Ratio: %.2f:1 (%.1f%%)",
                 originalData.length,
                 compressedTokens.size(),
-                compressedTokens.size() * 3,
+                compressedTokens.size() * 3,  // теперь используется %d вместо %.1f
                 compressionRatio,
                 getCompressionPercentage()
         );

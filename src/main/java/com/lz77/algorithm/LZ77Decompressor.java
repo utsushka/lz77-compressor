@@ -12,21 +12,19 @@ public class LZ77Decompressor {
 
         for (Token token : tokens) {
             if (token.offset() == 0) {
-                // Литерал - просто копируем символ
                 output[outputPos++] = token.nextChar();
             } else {
-                // Копируем последовательность из предыдущих данных
+                // Копирование совпадающей последовательности
                 int startPos = outputPos - token.offset();
                 for (int i = 0; i < token.length(); i++) {
                     output[outputPos++] = output[startPos + i];
                 }
-                // Добавляем следующий символ, если он есть
-                if (token.nextChar() != 0) {
+                // Добавляем следующий символ, если он есть (даже если нулевой)
+                if (outputPos < output.length && token.nextChar() != 0) {
                     output[outputPos++] = token.nextChar();
                 }
             }
         }
-
         return output;
     }
 
@@ -34,7 +32,7 @@ public class LZ77Decompressor {
         int size = 0;
         for (Token token : tokens) {
             size += token.length();
-            if (token.nextChar() != 0 || token.offset() == 0) {
+            if (token.offset() == 0 || token.nextChar() != 0) {
                 size += 1;
             }
         }

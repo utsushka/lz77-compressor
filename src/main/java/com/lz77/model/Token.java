@@ -13,11 +13,16 @@ public record Token(int offset, int length, byte nextChar) {
         if (length < 0) throw new IllegalArgumentException("Length cannot be negative");
     }
 
-    /*
     @Override
     public String toString() {
-        return String.format("(%d,%d,%s)", offset, length,
-                nextChar == 0 ? "null" : (char)nextChar);
+        String charRepresentation;
+        if (nextChar == 0) {
+            charRepresentation = "null";
+        } else if (nextChar == '\n') {
+            charRepresentation = "\n";  // Оставляем фактический символ
+        } else {
+            charRepresentation = String.valueOf((char) nextChar);
+        }
+        return String.format("(%d,%d,%s)", offset, length, charRepresentation);
     }
-    */
 }

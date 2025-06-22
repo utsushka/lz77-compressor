@@ -16,13 +16,19 @@ public class Validation {
             throw new IllegalArgumentException("Tokens list cannot be null");
         }
 
-        for (Token token : tokens) {
-            if (token.offset() < 0) {
-                throw new IllegalStateException("Invalid token: negative offset");
+        try {
+            for (Token token : tokens) {
+                // Явно проверяем параметры, если конструктор Token не бросает исключения
+                if (token.offset() < 0) {
+                    throw new IllegalStateException("Invalid token: negative offset");
+                }
+                if (token.length() < 0) {
+                    throw new IllegalStateException("Invalid token: negative length");
+                }
             }
-            if (token.length() < 0) {
-                throw new IllegalStateException("Invalid token: negative length");
-            }
+        } catch (IllegalArgumentException e) {
+            // Преобразуем IllegalArgumentException в IllegalStateException
+            throw new IllegalStateException("Invalid token: " + e.getMessage());
         }
     }
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LZ77Compressor {
-    private static final int WINDOW_SIZE = 1024;
+    public static final int WINDOW_SIZE = 1024;
     private static final int LOOKAHEAD_BUFFER_SIZE = 256;
 
     public List<Token> compress(byte[] input) {
@@ -32,9 +32,14 @@ public class LZ77Compressor {
             }
 
             if (maxLength > 0) {
+                // Не добавляем nextChar если это конец данных
                 byte nextChar = pos + maxLength < input.length ? input[pos + maxLength] : 0;
-                tokens.add(new Token(bestOffset, maxLength, nextChar));
-                pos += maxLength + 1;
+                if (nextChar != 0 || pos + maxLength < input.length) {
+                    tokens.add(new Token(bestOffset, maxLength, nextChar));
+                } else {
+                    tokens.add(new Token(bestOffset, maxLength, (byte)0));
+                }
+                pos += maxLength + (nextChar != 0 ? 1 : 0);
             } else {
                 tokens.add(new Token(0, 0, input[pos]));
                 pos++;
